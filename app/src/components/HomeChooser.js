@@ -17,7 +17,14 @@ const HomeChooser = (props) => {
 	};
 
 	return (
-		<div style={{ padding: "2em 0px" }}>
+		<div
+			style={{
+				padding: "2em 0px",
+				display: "flex",
+				flexDirection: "column",
+				alignItems: "center",
+				justifyContent: "center",
+			}}>
 			<Radio.Group
 				onChange={onChange}
 				defaultValue={UploadType.Text}
