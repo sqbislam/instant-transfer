@@ -8,12 +8,9 @@ import {
 	MenuFoldOutlined,
 	MenuUnfoldOutlined,
 	UploadOutlined,
-	UserOutlined,
 	DownloadOutlined,
-	VideoCameraOutlined,
 } from "@ant-design/icons";
 import Logo from "./images/logo-dark.svg";
-import { getStatusClassNames } from "antd/lib/_util/statusUtils";
 import classnames from "classnames";
 
 const { Title } = Typography;
@@ -27,6 +24,7 @@ const App = () => {
 			<Layout style={{ height: "100%" }}>
 				<Sider trigger={null} collapsible collapsed={collapsed}>
 					<img
+						alt="logo-instant-transfer"
 						className={classnames("logo", {
 							"logo-mini": collapsed,
 						})}
