@@ -5,9 +5,9 @@ const app = express();
 const cors = require("cors");
 
 app.use(
-	cors({
-		origin: "*",
-	}),
+  cors({
+    origin: "*",
+  })
 );
 app.use(express.json());
 
