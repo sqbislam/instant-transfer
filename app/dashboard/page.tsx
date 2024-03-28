@@ -17,7 +17,7 @@ export default function FileDashboard() {
           <FileDropzone />
         </CardContent>
 
-        <Button>Upload</Button>
+     
       </Card>
     </div>
   );

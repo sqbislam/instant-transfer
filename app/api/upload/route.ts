@@ -1,99 +1,105 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import prisma from '../../../lib/prisma';
 import { getSession } from 'next-auth/react';
 import aws from 'aws-sdk';
-import { ChangeEvent } from 'react';
-import toast from 'react-toastify';
+import {toast} from 'react-toastify';
+import axios from 'axios'
+import { NextRequest, NextResponse } from 'next/server';
+// Relevant imports
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner"
+import { S3Client, PutObjectCommand, GetObjectCommand } from "@aws-sdk/client-s3"
 
-export default async function POST(req: NextApiRequest, res: NextApiResponse) {
-  const session = await getSession({ req });
 
-  // Update AWS configuration with the provided credentials
-  aws.config.update({
-    region: 'eu-west-2',
+// Initialize S3Client instance
+const client = new S3Client({
+  region: process.env.AWS_REGION,
+  credentials: {
     accessKeyId: process.env.AWS_ACCESS_KEY,
     secretAccessKey: process.env.AWS_SECRET,
-  });
+  },
+} as any)
 
-  const s3Bucket = process.env.AWS_BUCKET;
+const POST = async (req: NextRequest) => {
+  try {
+    // const user = await currentUser()
+    // if (!user) return new Response('Unauthorized', { status: 401 })
 
-  // Create a new instance of S3
-  const s3 = new aws.S3();
-  const fileName = req.body.fileName;
-  const fileType = req.body.fileType;
+    const { fileName, fileType } = await req.json()
+    if (!fileType || !fileName) {
+      throw new Error("There was a problem with the file!")
+    }
 
-  const s3Params = {
-    Bucket: s3Bucket,
-    Key: `businesslogos/${fileName}`,
-    ContentType: fileType,
-    ACL: 'public-read',
-  };
+    // Create a new media entry in database.
+    // The uploaded media file will be stored in the S3 bucket 
+    // with a name (Key) matching the id (PK) of the newMedia/photo. 
+    // const newMedia = await prisma.photo.create({
+    //   data: {
+    //     fileSize: fileSize,
+    //     fileName: fileName,
+    //     mimeType: fileType,
+    //     authorId: user.id,
+    //     authorName: `${user.firstName} ${user.lastName}`
+    //   }
+    // })
 
-  //   try {
-  //     // Get a signed URL from S3 for uploading an object
-  //     s3.getSignedUrl("putObject", s3Params, async (err, data) => {
-  //       if (err) {
-  //         return res.json({ success: false, error: err });
-  //       }
-  //       const returnData = {
-  //         signedRequest: data,
-  //         url: `https://${s3Bucket}.s3.amazonaws.com/businesslogos/${fileName}`,
-  //       };
-  //       const imageUrl = await prisma.user.update({
-  //         where: {
-  //           email: session.user.email,
-  //         },
-  //         data: {
-  //           business: {
-  //             update: {
-  //               businessLogo: returnData.url,
-  //             },
-  //           },
-  //         },
-  //       });
+    // if (!newMedia) { throw new Error("Something went wrong!") }
 
-  //       return res.status(200).json(returnData);
-  //     });
-  //   } catch (err) {
-  //     return res.status(500).json(err);
-  //   }
+    // PutObjectCommand: used to generate a pre-signed URL for uploading
+    const putCommand = new PutObjectCommand({
+      Key: fileName,
+      ContentType: fileType,
+      Bucket: process.env.AWS_BUCKET,
+    })
+    // Generate pre-signed URL for PUT request
+    const putUrl = await getSignedUrl(client, putCommand, { expiresIn: 600 })
+
+    // GetObjectCommand: used to generate a pre-signed URL for viewing.
+    const getCommand = new GetObjectCommand({
+      Key:fileName,
+      Bucket: process.env.AWS_BUCKET,
+    })
+    // Generate pre-signed URL for GET request
+    const getUrl = await getSignedUrl(client, getCommand, { expiresIn: 600 })
+
+    return NextResponse.json({ putUrl, getUrl }, { status: 200 })
+  } catch (error) {
+    console.log(error)
+    throw error
+  }
 }
 
-// const handleUpload = (ev: ChangeEvent<HTMLButtonElement>) => {
-//   let file = uploadInput.current.files[0];
-//   // Split the filename to get the name and type
-//   let fileParts = uploadInput.current.files[0].name.split(".");
-//   let fileName = fileParts[0];
-//   let fileType = fileParts[1];
-//   axios
-//     .post("/api/awsimageupload", {
-//       fileName: fileName,
-//       fileType: fileType,
-//     })
-//     .then((res) => {
-//       const signedRequest = res.data.signedRequest;
-//       const url = res.data.url;
-//       setUploadState({
-//         ...uploadState,
-//         url,
-//       });
 
-//       var options = {
-//         headers: {
-//           "Content-Type": fileType,
-//         },
-//       };
-//       axios
-//         .put(signedRequest, file, options)
-//         .then((_) => {
-//           setUploadState({ ...uploadState, success: true });
-//           mutate();
-//         })
-//         .catch((_) => {
-//           toast("error", "We could not upload your image");
-//         });
-//     })
-//     .catch((error) => {
-//       toast("error", "We could not upload your image");
-//     });
-// };
+export const handleUpload = async (files:FileList | null) => {
+  if(files){
+     try {
+    let currfile = files[0];
+    // Split the filename to get the name and type
+    let fileParts = currfile.name.split(".");
+    let fileName = fileParts[0];
+    let fileType = fileParts[1];
+
+    // Add data to formdata
+    const formdata = new FormData();
+    formdata.append("fileName", fileName);
+    formdata.append("fileType", fileType);
+    const res = await axios.post("/api/upload", formdata, { headers: { "Content-Type": "application/json" }})
+    console.debug({res})
+    const { putUrl, getUrl } =  await res.data
+
+    // Request made to putUrl, media file included in body
+    const uploadResponse = await fetch(putUrl, {
+      body: currfile,
+      method: "PUT",
+      headers: { "Content-Type": currfile.type }
+    })
+    toast.success("You have successfully uploaded your file")
+    return { status: uploadResponse.ok, uploadedUrl: getUrl }
+  } catch (error) {
+    console.log(error)
+    throw error
+  }
+  }
+};
+
+export {
+  POST,
+}

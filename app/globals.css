@@ -131,6 +131,11 @@
   color: #ff6e40;
   box-shadow: 0 0 13px 3px #ff6e40;
 }
+
+.file-icon {
+  height: 40px;
+  width: 40px;
+}
 /* Dropzone css styles ENDS */
 @layer base {
   * {

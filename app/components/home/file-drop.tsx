@@ -2,22 +2,25 @@
 
 import { ChangeEvent, useRef, useState } from 'react';
 import { FileDrop } from 'react-file-drop';
+import FilesList from './file-list';
+import { Button } from '../ui/button';
+import { handleUpload } from '@/app/api/upload/route';
 
 export default function FileDropzone() {
   const fileInputRef = useRef(null);
-  const [currFile, setCurrFile] = useState<File | null>(null); // or any other type you want to use
+  const [currFiles, setCurrFiles] = useState<FileList | null>(null); // or any other type you want to use
 
   const onFileDrop = (
     files: FileList | null,
     ev: React.DragEvent<HTMLDivElement>,
   ) => {
-    setCurrFile(files && files[0]);
+    setCurrFiles(files);
     // do something with your files...
   };
 
   const onFileInputChange = (event: ChangeEvent<HTMLInputElement>) => {
     const { files } = event.target;
-    setCurrFile(files && files[0]);
+    setCurrFiles(files);
     // do something with your files...
   };
   const onTargetClick = () => {
@@ -33,11 +36,16 @@ export default function FileDropzone() {
         ref={fileInputRef}
         type='file'
         className='hidden'
+        multiple
       />
-      <FileDrop onTargetClick={onTargetClick} onDrop={onFileDrop}>
+      <FileDrop onTargetClick={onTargetClick} onDrop={onFileDrop}  >
         Drop File Here
-        <span>{currFile && currFile.name}</span>
       </FileDrop>
+
+      <FilesList files={currFiles} />
+
+         <Button onClick={(e)=>{e.preventDefault(); 
+          handleUpload(currFiles)}}>Upload</Button>
     </div>
   );
 }
