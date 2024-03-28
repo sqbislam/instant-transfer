@@ -1,48 +1,94 @@
 import { formatBytes, truncateString } from '@/lib/utils';
 import { Card } from '../ui/card';
 import { fileIconTypes } from '@/lib/fileIcons';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../ui/tooltip';
-
-const FileItem = ({ file }: { file: File }) => {
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '../ui/tooltip';
+import { Progress } from '../ui/progress';
+import { BsCheckCircleFill } from 'react-icons/bs';
+const FileItem = ({
+  file,
+  progress = 0,
+  completed = false,
+}: {
+  file: File;
+  completed?: boolean;
+  progress?: number;
+}) => {
   const { name, size, type } = file;
   let nameComp = (
     <h3 className='text-md font-semibold'>{truncateString(name, 50)}</h3>
   );
 
   if (name && name.length > 50) {
-    nameComp =     (<TooltipProvider>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <h3 className='text-md font-semibold cursor-pointer'>{truncateString(name, 50)}</h3>
-        </TooltipTrigger>
-        <TooltipContent>
-          <p>{name}</p>
-        </TooltipContent>
-      </Tooltip>
-    </TooltipProvider>)
+    nameComp = (
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <h3 className='text-md cursor-pointer font-semibold'>
+              {truncateString(name, 50)}
+            </h3>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>{name}</p>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+    );
     // Implement tooltip logic
   }
+  console.log({ progress });
 
   return (
-    <Card className='mt-2 flex flex-row items-center p-1 '>
+    <Card className='relative mt-2 flex w-full flex-row items-center p-1'>
       <div className='flex h-[50px] w-[50px] items-center  justify-center'>
-        {type && fileIconTypes.hasOwnProperty(type) ? fileIconTypes[type] : fileIconTypes['default']}
+        {type && fileIconTypes.hasOwnProperty(type)
+          ? fileIconTypes[type]
+          : fileIconTypes['default']}
       </div>
-      <div className='flex flex-col pl-2'>
+      <div className='flex w-full flex-col pl-2'>
         {nameComp}
         <p className='text-sm text-slate-500'>{formatBytes(size)}</p>
+        {!completed && (
+          <Progress
+            className=' mt-1 h-2 w-[90%]'
+            value={Math.round(progress * 100)}
+          />
+        )}
       </div>
       <p></p>
+      {completed && (
+        <BsCheckCircleFill className='absolute right-2 text-green-500' />
+      )}
     </Card>
   );
 };
-export default function FilesList({ files }: { files: FileList | null }) {
+export default function FilesList({
+  files,
+  fileProgress,
+  uploadUrl,
+}: {
+  files: FileList | null;
+  fileProgress: Record<string, number> | undefined;
+  uploadUrl: Record<string, string> | undefined;
+}) {
   const filesArray = files && files.length > 0 ? Array.from(files) : [];
+
   return (
     <>
       {files &&
         files.length > 0 &&
-        filesArray.map((file) => <FileItem key={file.name} file={file} />)}
+        filesArray.map((file) => (
+          <FileItem
+            key={file.name}
+            file={file}
+            completed={uploadUrl && uploadUrl[file.name]}
+            progress={fileProgress && fileProgress[file.name]}
+          />
+        ))}
     </>
   );
 }

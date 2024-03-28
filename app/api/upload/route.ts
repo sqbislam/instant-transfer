@@ -66,42 +66,42 @@ const POST = async (req: NextRequest) => {
 }
 
 
-export const handleUpload = async (files:FileList | null) => {
-  if(files){
-     try {
-    let currfile = files[0];
-    // Split the filename to get the name and type
-    let fileParts = currfile.name.split(".");
-    let fileName = fileParts[0];
-    let fileType = fileParts[1];
+// export const handleUpload = async (files:FileList | null) => {
+//   if(files){
+//      try {
+//     let currfile = files[0];
+//     // Split the filename to get the name and type
+//     let fileParts = currfile.name.split(".");
+//     let fileName = fileParts[0];
+//     let fileType = fileParts[1];
     
-    const config = {
-      onUploadProgress: progressEvent => console.log(progressEvent.loaded),
-      headers: { "Content-Type": "application/json"}
-    }
+//     const config = {
+//       onUploadProgress: progressEvent => console.log(progressEvent.loaded),
+//       headers: { "Content-Type": "application/json"}
+//     }
 
-    // Add data to formdata
-    const formdata = new FormData();
-    formdata.append("fileName", fileName);
-    formdata.append("fileType", fileType);
-    const res = await axios.post("/api/upload", formdata, config)
+//     // Add data to formdata
+//     const formdata = new FormData();
+//     formdata.append("fileName", fileName);
+//     formdata.append("fileType", fileType);
+//     const res = await axios.post("/api/upload", formdata, config)
   
-    const { putUrl, getUrl } =  await res.data
+//     const { putUrl, getUrl } =  await res.data
 
-    // Request made to putUrl, media file included in body
-    const uploadResponse = await fetch(putUrl, {
-      body: currfile,
-      method: "PUT",
-      headers: { "Content-Type": currfile.type },
-    })
-    toast.success("You have successfully uploaded your file")
-    return { status: uploadResponse.ok, uploadedUrl: getUrl }
-  } catch (error) {
-    console.log(error)
-    throw error
-  }
-  }
-};
+//     // Request made to putUrl, media file included in body
+//     const uploadResponse = await fetch(putUrl, {
+//       body: currfile,
+//       method: "PUT",
+//       headers: { "Content-Type": currfile.type },
+//     })
+//     toast.success("You have successfully uploaded your file")
+//     return { status: uploadResponse.ok, uploadedUrl: getUrl }
+//   } catch (error) {
+//     console.log(error)
+//     throw error
+//   }
+//   }
+// };
 
 export {
   POST,

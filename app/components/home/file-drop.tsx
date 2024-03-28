@@ -4,12 +4,13 @@ import { ChangeEvent, useRef, useState } from 'react';
 import { FileDrop } from 'react-file-drop';
 import FilesList from './file-list';
 import { Button } from '../ui/button';
-import { handleUpload } from '@/app/api/upload/route';
+import { useFileUpload } from '@/lib/hooks/use-file-upload';
+import { Progress } from '../ui/progress';
 
 export default function FileDropzone() {
   const fileInputRef = useRef(null);
   const [currFiles, setCurrFiles] = useState<FileList | null>(null); // or any other type you want to use
-
+  const { fileProgress, handleMultipleFileUpload, uploadUrl } = useFileUpload();
   const onFileDrop = (
     files: FileList | null,
     ev: React.DragEvent<HTMLDivElement>,
@@ -28,7 +29,6 @@ export default function FileDropzone() {
       fileInputRef.current &&
       (fileInputRef.current as any).click();
   };
-
   return (
     <div className='w-full'>
       <input
@@ -38,14 +38,23 @@ export default function FileDropzone() {
         className='hidden'
         multiple
       />
-      <FileDrop onTargetClick={onTargetClick} onDrop={onFileDrop}  >
+      <FileDrop onTargetClick={onTargetClick} onDrop={onFileDrop}>
         Drop File Here
       </FileDrop>
 
-      <FilesList files={currFiles} />
+      <FilesList files={currFiles} fileProgress={fileProgress} uploadUrl={uploadUrl} />
 
-         <Button className='mx-auto mt-5 w-full' onClick={(e)=>{e.preventDefault(); 
-          handleUpload(currFiles)}}>Upload</Button>
+      <Button
+        className='mx-auto mt-5 w-full'
+        onClick={(e) => {
+          e.preventDefault();
+          if (currFiles && currFiles.length > 0) {
+            handleMultipleFileUpload(currFiles);
+          }
+        }}
+      >
+        Upload
+      </Button>
     </div>
   );
 }
