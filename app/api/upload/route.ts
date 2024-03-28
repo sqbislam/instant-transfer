@@ -1,6 +1,4 @@
-import { NextApiRequest, NextApiResponse } from 'next';
-import { getSession } from 'next-auth/react';
-import aws from 'aws-sdk';
+
 import {toast} from 'react-toastify';
 import axios from 'axios'
 import { NextRequest, NextResponse } from 'next/server';
@@ -76,20 +74,25 @@ export const handleUpload = async (files:FileList | null) => {
     let fileParts = currfile.name.split(".");
     let fileName = fileParts[0];
     let fileType = fileParts[1];
+    
+    const config = {
+      onUploadProgress: progressEvent => console.log(progressEvent.loaded),
+      headers: { "Content-Type": "application/json"}
+    }
 
     // Add data to formdata
     const formdata = new FormData();
     formdata.append("fileName", fileName);
     formdata.append("fileType", fileType);
-    const res = await axios.post("/api/upload", formdata, { headers: { "Content-Type": "application/json" }})
-    console.debug({res})
+    const res = await axios.post("/api/upload", formdata, config)
+  
     const { putUrl, getUrl } =  await res.data
 
     // Request made to putUrl, media file included in body
     const uploadResponse = await fetch(putUrl, {
       body: currfile,
       method: "PUT",
-      headers: { "Content-Type": currfile.type }
+      headers: { "Content-Type": currfile.type },
     })
     toast.success("You have successfully uploaded your file")
     return { status: uploadResponse.ok, uploadedUrl: getUrl }

@@ -5,7 +5,6 @@ import { sfPro, inter } from './fonts';
 import Nav from '@/components/layout/nav';
 import Footer from '@/components/layout/footer';
 import { Suspense } from 'react';
-import { ToastContainer } from 'react-toastify';
 
 export const metadata = {
   title: 'Instant Transfer',
@@ -24,18 +23,7 @@ export default async function RootLayout({
     <html lang='en'>
       <body className={cx(sfPro.variable, inter.variable)}>
         <div className='fixed h-screen w-full bg-gradient-to-br from-indigo-50 via-white to-cyan-100' />
-          <ToastContainer
-            position="bottom-right"
-            autoClose={5000}
-            hideProgressBar={false}
-            newestOnTop={false}
-            closeOnClick
-            rtl={false}
-            pauseOnFocusLoss
-            draggable
-            pauseOnHover
-            theme="dark"
-            />
+      
         <Suspense fallback='...'>
           <Nav />
         </Suspense>

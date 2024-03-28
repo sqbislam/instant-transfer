@@ -44,7 +44,7 @@ export default function FileDropzone() {
 
       <FilesList files={currFiles} />
 
-         <Button onClick={(e)=>{e.preventDefault(); 
+         <Button className='mx-auto mt-5 w-full' onClick={(e)=>{e.preventDefault(); 
           handleUpload(currFiles)}}>Upload</Button>
     </div>
   );
