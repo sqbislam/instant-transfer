@@ -6,24 +6,23 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url = env("POSTGRES_PRISMA_URL") // uses connection pooling
-  directUrl = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
 }
 
 
 model Account {
-  id                 String  @id @default(cuid())
+  id                 String   @map("_id") @id @default(cuid())
   userId             String
   type               String
   provider           String
   providerAccountId  String
-  refresh_token      String?  @db.Text
-  access_token       String?  @db.Text
+  refresh_token      String?  @db.String
+  access_token       String?  @db.String
   expires_at         Int?
   token_type         String?
   scope              String?
-  id_token           String?  @db.Text
+  id_token           String?  @db.String
   session_state      String?
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -33,7 +32,7 @@ model Account {
 }
 
 model Session {
-  id           String   @id @default(cuid())
+  id           String   @map("_id") @id @default(cuid())
   sessionToken String   @unique
   userId       String
   expires      DateTime
@@ -42,7 +41,7 @@ model Session {
 }
 
 model User {
-  id            String    @id @default(cuid())
+  id            String    @map("_id") @id @default(cuid())
   name          String?
   email         String?   @unique
   emailVerified DateTime?
@@ -52,9 +51,16 @@ model User {
 }
 
 model VerificationToken {
-  identifier String
-  token      String   @unique
+  identifier String   @map("_id") @id @default(cuid())
+  token      String   @unique 
   expires    DateTime
 
   @@unique([identifier, token])
+}
+
+model FileMapper {
+  otpHash String @map("_id") @id
+  fileIdentifier String
+  expiresAt DateTime
+  createdAt DateTime
 }

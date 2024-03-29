@@ -6,11 +6,19 @@ import FilesList from './file-list';
 import { Button } from '../ui/button';
 import { useFileUpload } from '@/lib/hooks/use-file-upload';
 import { Progress } from '../ui/progress';
+import OTPDisplay from '../ui/otp-display';
 
 export default function FileDropzone() {
   const fileInputRef = useRef(null);
   const [currFiles, setCurrFiles] = useState<FileList | null>(null); // or any other type you want to use
-  const { fileProgress, handleMultipleFileUpload, uploadUrl } = useFileUpload();
+  const {
+    fileProgress,
+    handleMultipleFileUpload,
+    uploadUrl,
+    generatedOTP,
+    allFilesUploaded,
+    isLoading,
+  } = useFileUpload();
   const onFileDrop = (
     files: FileList | null,
     ev: React.DragEvent<HTMLDivElement>,
@@ -39,22 +47,32 @@ export default function FileDropzone() {
         multiple
       />
       <FileDrop onTargetClick={onTargetClick} onDrop={onFileDrop}>
-        Drop File Here
+        <p>Drop File Here</p>
       </FileDrop>
 
-      <FilesList files={currFiles} fileProgress={fileProgress} uploadUrl={uploadUrl} />
-
-      <Button
-        className='mx-auto mt-5 w-full'
-        onClick={(e) => {
-          e.preventDefault();
-          if (currFiles && currFiles.length > 0) {
-            handleMultipleFileUpload(currFiles);
-          }
-        }}
-      >
-        Upload
-      </Button>
+      <FilesList
+        files={currFiles}
+        fileProgress={fileProgress}
+        uploadUrl={uploadUrl}
+      />
+      <div className='mx-auto mt-5 w-full'>
+        {allFilesUploaded ? (
+          <OTPDisplay otp={generatedOTP} />
+        ) : (
+          <Button
+            className='w-full'
+            disabled={isLoading || !currFiles || currFiles.length === 0}
+            onClick={(e) => {
+              e.preventDefault();
+              if (currFiles && currFiles.length > 0) {
+                handleMultipleFileUpload(currFiles);
+              }
+            }}
+          >
+            Upload
+          </Button>
+        )}
+      </div>
     </div>
   );
 }

@@ -85,7 +85,7 @@ export default function FilesList({
           <FileItem
             key={file.name}
             file={file}
-            completed={uploadUrl && uploadUrl[file.name]}
+            completed={uploadUrl && uploadUrl[file.name] ? true : false}
             progress={fileProgress && fileProgress[file.name]}
           />
         ))}

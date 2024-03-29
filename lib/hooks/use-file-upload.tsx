@@ -7,6 +7,9 @@ export const useFileUpload = () => {
   const [fileProgress, setFileProgress] = useState(
     {} as Record<string, number>,
   );
+  const [generatedOTP, setGeneratedOTP] = useState('' as any);
+  const [allFilesUploaded, setAllFilesUploaded] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleSingleFileUpload = async (file: File) => {
     if (!file) {
@@ -29,7 +32,7 @@ export const useFileUpload = () => {
         headers: { 'Content-Type': 'application/json' },
       };
       const res = await axios.post('/api/upload', formdata, config);
-      const { putUrl, getUrl } = await res.data;
+      const { putUrl, getUrl, generatedOTP } = await res.data;
       const uploadResponse = await axios.put(putUrl, currfile, {
         headers: { 'Content-Type': currfile.type },
         onUploadProgress: (progressEvent) => {
@@ -46,8 +49,9 @@ export const useFileUpload = () => {
       if (!(uploadResponse.status === 200)) {
         throw new Error('Failed to upload file');
       }
+      setGeneratedOTP(generatedOTP);
       setFileProgress({ ...fileProgress, [file.name]: 1.0 }); // Set file progress to 100% when file upload succeeds
-
+      console.debug({ generatedOTP, getUrl });
       //toast.success('You have successfully uploaded your file');
       // Optionally return uploadedUrl or any other data
       return getUrl;
@@ -59,6 +63,8 @@ export const useFileUpload = () => {
   };
 
   const handleMultipleFileUpload = async (files: FileList) => {
+    setAllFilesUploaded(false);
+    setIsLoading(true);
     try {
       const filesArray = Array.from(files);
       const totalFiles = filesArray.length;
@@ -70,11 +76,21 @@ export const useFileUpload = () => {
       }
 
       toast.success('All files uploaded successfully');
+      setAllFilesUploaded(true);
+      setIsLoading(false);
     } catch (error) {
       console.error(error);
+      setIsLoading(false);
       toast.error('Failed to upload files');
     }
   };
 
-  return { handleMultipleFileUpload, fileProgress, uploadUrl };
+  return {
+    handleMultipleFileUpload,
+    fileProgress,
+    uploadUrl,
+    generatedOTP,
+    allFilesUploaded,
+    isLoading,
+  };
 };
