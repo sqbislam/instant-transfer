@@ -5,7 +5,7 @@ import { sfPro, inter } from './fonts';
 import Nav from '@/components/layout/nav';
 import Footer from '@/components/layout/footer';
 import { Suspense } from 'react';
-
+import { AiOutlineThunderbolt } from 'react-icons/ai';
 export const metadata = {
   title: 'Instant Transfer',
   description:
@@ -22,15 +22,27 @@ export default async function RootLayout({
   return (
     <html lang='en'>
       <body className={cx(sfPro.variable, inter.variable)}>
-        <div className='fixed h-screen w-full bg-gradient-to-br from-indigo-50 via-white to-cyan-100' />
-      
+        <div className='fixed z-[-10] h-screen w-full bg-gradient-to-br from-indigo-50 via-white to-cyan-100' />
+
         <Suspense fallback='...'>
           <Nav />
         </Suspense>
-        <main className='flex min-h-screen w-full flex-col items-center py-32'>
-            {children}
+        <main className='z-5 flex min-h-screen w-full flex-col items-center py-32'>
+          <div className=' w-full max-w-xl px-10 xl:px-0'>
+            <div className='w-full '>
+              <h2 className='my-4 inline-block text-2xl font-bold'>
+                Instant Transfer
+                <AiOutlineThunderbolt />
+              </h2>
+              <p className='text-slate-500'>
+                File transfer made easy. Just upload your file and use the code
+                or QR code to download file in your desired device
+              </p>
+            </div>
+          </div>
+          {children}
         </main>
-      
+
         <Footer />
         <Analytics />
       </body>

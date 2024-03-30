@@ -1,9 +1,20 @@
 import { useState } from 'react';
 import { toast } from 'react-toastify';
 import axios from 'axios';
+import prisma from '@/lib/prisma';
+import { createFormDataFromObject, generateOTP, hashOTP } from '../utils';
+export interface FileUploadData {
+  [key: string]: {
+    error?: string;
+    uploadedUrl?: string;
+    fileIdentifier?: string;
+    fileName?: string;
+    success?: boolean;
+  };
+}
 
 export const useFileUpload = () => {
-  const [uploadUrl, setUploadUrl] = useState({} as Record<string, string>);
+  const [fileUploadData, setFileUploadData] = useState<FileUploadData>({});
   const [fileProgress, setFileProgress] = useState(
     {} as Record<string, number>,
   );
@@ -25,14 +36,15 @@ export const useFileUpload = () => {
       let fileName = fileParts[0];
       let fileType = fileParts[1];
 
-      const formdata = new FormData();
-      formdata.append('fileName', fileName);
-      formdata.append('fileType', fileType);
-      const config = {
+      const data = createFormDataFromObject({ fileName, fileType });
+
+      const res = await axios.post('/api/upload', data, {
         headers: { 'Content-Type': 'application/json' },
-      };
-      const res = await axios.post('/api/upload', formdata, config);
-      const { putUrl, getUrl, generatedOTP } = await res.data;
+      });
+
+      // Get the pre-signed URL for uploading the file and OTP
+      const { putUrl, getUrl, fileIdentifier } = await res.data;
+
       const uploadResponse = await axios.put(putUrl, currfile, {
         headers: { 'Content-Type': currfile.type },
         onUploadProgress: (progressEvent) => {
@@ -49,12 +61,20 @@ export const useFileUpload = () => {
       if (!(uploadResponse.status === 200)) {
         throw new Error('Failed to upload file');
       }
-      setGeneratedOTP(generatedOTP);
       setFileProgress({ ...fileProgress, [file.name]: 1.0 }); // Set file progress to 100% when file upload succeeds
-      console.debug({ generatedOTP, getUrl });
-      //toast.success('You have successfully uploaded your file');
-      // Optionally return uploadedUrl or any other data
-      return getUrl;
+      setFileUploadData((prev) => ({
+        ...prev,
+        [currfile.name]: {
+          uploadedUrl: getUrl,
+          success: true,
+          fileName,
+          fileIdentifier,
+        },
+      }));
+
+      toast.success('You have successfully uploaded your file');
+
+      return { getUrl, fileIdentifier };
     } catch (error) {
       console.error(error);
       setFileProgress({ ...fileProgress, [file.name]: 0.0 }); // Set file progress to 100% when file upload succeeds
@@ -68,13 +88,26 @@ export const useFileUpload = () => {
     try {
       const filesArray = Array.from(files);
       const totalFiles = filesArray.length;
-
+      const fileIdentifiers = [];
       for (let i = 0; i < totalFiles; i++) {
         const file = files[i];
-        const uploadedUrl = await handleSingleFileUpload(file);
-        setUploadUrl((prev) => ({ ...prev, [file.name]: uploadedUrl }));
+        const singleFileUploadRes = await handleSingleFileUpload(file);
+        fileIdentifiers.push(singleFileUploadRes?.fileIdentifier);
       }
 
+      // Request Prisma to upload hashed OTP and file Identifiers
+      const data = { fileIdentifiers };
+      const res = await axios.post('/api/hash', data, {
+        headers: { 'Content-Type': 'application/json' },
+      });
+
+      if (!(res.status === 200)) {
+        throw new Error('Failed to generate OTP');
+      }
+      // Get the pre-signed URL for uploading the file and OTP
+      const { generatedOTP } = await res.data;
+
+      setGeneratedOTP(generatedOTP);
       toast.success('All files uploaded successfully');
       setAllFilesUploaded(true);
       setIsLoading(false);
@@ -88,7 +121,7 @@ export const useFileUpload = () => {
   return {
     handleMultipleFileUpload,
     fileProgress,
-    uploadUrl,
+    fileUploadData,
     generatedOTP,
     allFilesUploaded,
     isLoading,

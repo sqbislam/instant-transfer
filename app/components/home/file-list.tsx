@@ -1,4 +1,4 @@
-import { formatBytes, truncateString } from '@/lib/utils';
+import { formatBytes, hasKey, truncateString } from '@/lib/utils';
 import { Card } from '../ui/card';
 import { fileIconTypes } from '@/lib/fileIcons';
 import {
@@ -9,6 +9,7 @@ import {
 } from '../ui/tooltip';
 import { Progress } from '../ui/progress';
 import { BsCheckCircleFill } from 'react-icons/bs';
+import { FileUploadData } from '@/lib/hooks/use-file-upload';
 const FileItem = ({
   file,
   progress = 0,
@@ -69,13 +70,15 @@ const FileItem = ({
 export default function FilesList({
   files,
   fileProgress,
-  uploadUrl,
+  fileUploadData,
 }: {
   files: FileList | null;
   fileProgress: Record<string, number> | undefined;
-  uploadUrl: Record<string, string> | undefined;
+  fileUploadData: FileUploadData | undefined;
 }) {
   const filesArray = files && files.length > 0 ? Array.from(files) : [];
+
+  // Check if object has a key
 
   return (
     <>
@@ -85,7 +88,11 @@ export default function FilesList({
           <FileItem
             key={file.name}
             file={file}
-            completed={uploadUrl && uploadUrl[file.name] ? true : false}
+            completed={
+              fileUploadData && file && hasKey(fileUploadData, file.name)
+                ? fileUploadData[file.name].success
+                : false
+            }
             progress={fileProgress && fileProgress[file.name]}
           />
         ))}

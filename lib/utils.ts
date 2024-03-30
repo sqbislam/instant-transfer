@@ -42,3 +42,16 @@ export const generateOTP = (otpLength = 6) => {
 export const hashOTP = (otp: string) => {
   return crypto.createHash('sha256').update(otp).digest('hex');
 };
+
+// Check if obj has own key
+export const hasKey = (obj: Record<string, any>, key: string) => {
+  return Object.prototype.hasOwnProperty.call(obj, key);
+};
+
+export const createFormDataFromObject = (object: Record<string, any>) => {
+  const formData = new FormData();
+  Object.keys(object).forEach((key) => {
+    formData.append(key, object[key]);
+  });
+  return formData;
+}

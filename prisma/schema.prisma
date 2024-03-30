@@ -60,7 +60,7 @@ model VerificationToken {
 
 model FileMapper {
   otpHash String @map("_id") @id
-  fileIdentifier String
+  fileIdentifiers String[]
   expiresAt DateTime
   createdAt DateTime
 }

@@ -14,7 +14,7 @@ export default function FileDropzone() {
   const {
     fileProgress,
     handleMultipleFileUpload,
-    uploadUrl,
+    fileUploadData,
     generatedOTP,
     allFilesUploaded,
     isLoading,
@@ -53,7 +53,7 @@ export default function FileDropzone() {
       <FilesList
         files={currFiles}
         fileProgress={fileProgress}
-        uploadUrl={uploadUrl}
+        fileUploadData={fileUploadData}
       />
       <div className='mx-auto mt-5 w-full'>
         {allFilesUploaded ? (
