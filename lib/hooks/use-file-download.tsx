@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { toast } from 'react-toastify';
 
 export interface FileDownloadData {
@@ -8,26 +8,28 @@ export interface FileDownloadData {
     downloadedUrl?: string;
     fileIdentifier?: string;
     fileName?: string;
+    mimeType?: string;
+    size?: number;
     success?: boolean;
     isValid?: boolean;
   };
 }
 
 export const useFileDownload = () => {
-  const [fileUploadData, setFileUploadData] = useState<FileDownloadData>({});
-  const [fileProgress, setFileProgress] = useState(
-    {} as Record<string, number>,
+  const [fileDownloadData, setFileDownloadData] = useState<FileDownloadData>(
+    {},
   );
+
   const [inputOTP, setInputOTP] = useState('' as any);
   const [allFilesDownloaded, setAllFilesDownloaded] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  const resetState = () => {
-    setFileUploadData({});
-    setFileProgress({});
+  const resetState = useCallback(() => {
+    setFileDownloadData({});
+
     setAllFilesDownloaded(false);
     setIsLoading(false);
-  };
+  }, []);
 
   const onOTPInputChange = (value: string) => {
     setInputOTP(value);
@@ -45,7 +47,7 @@ export const useFileDownload = () => {
       });
 
       // Get the pre-signed URL for uploading the file and OTP
-      const { fileIdentifiers, fileNames } = await res.data;
+      const { fileIdentifiers, fileNames, mimeTypes, sizes } = await res.data;
       console.log({ fileIdentifiers, fileNames });
       // Retrieve files from s3 if fileIdentifiers are valid
       if (fileIdentifiers && fileIdentifiers.length > 0) {
@@ -61,10 +63,12 @@ export const useFileDownload = () => {
             downloadedUrl: getUrl,
             fileIdentifier,
             fileName: fileNames[i],
+            mimeType: mimeTypes[i],
+            size: sizes[i],
           };
           i++;
         }
-        setFileUploadData(fileDownloadData);
+        setFileDownloadData(fileDownloadData);
         setAllFilesDownloaded(true);
         setIsLoading(false);
       }
@@ -77,7 +81,8 @@ export const useFileDownload = () => {
   return {
     onInputChange: onOTPInputChange,
     handleMultipleFileDownload,
-    fileUploadData,
+    fileDownloadData,
     isLoading,
+    resetState,
   };
 };

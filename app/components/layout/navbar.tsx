@@ -6,7 +6,7 @@ import useScroll from '@/lib/hooks/use-scroll';
 import { useSignInModal } from './sign-in-modal';
 import UserDropdown from './user-dropdown';
 import { Session } from 'next-auth';
-
+import { MdDownload } from 'react-icons/md';
 export default function NavBar({ session }: { session: Session | null }) {
   const { SignInModal, setShowSignInModal } = useSignInModal();
   const scrolled = useScroll(50);
@@ -21,8 +21,11 @@ export default function NavBar({ session }: { session: Session | null }) {
             : 'bg-white/0'
         } z-30 transition-all`}
       >
-        <div className='mx-5 flex h-16 w-full max-w-screen-xl items-center justify-between'>
-          <Link href='/' className='flex items-center font-display text-2xl'>
+        <div className='mx-5 flex h-16 w-full max-w-screen-xl items-center justify-center gap-x-10'>
+          <Link
+            href='/'
+            className='font-display mr-auto flex items-center text-2xl'
+          >
             <Image
               src='/logo.png'
               alt='Instant Transfer logo'
@@ -32,7 +35,21 @@ export default function NavBar({ session }: { session: Session | null }) {
             ></Image>
             <p>Instant Transfer</p>
           </Link>
-          <div>
+
+          <Link
+            href='/'
+            className='font-display flex items-center rounded-sm text-lg font-semibold transition-all hover:text-gray-600'
+          >
+            <p>Upload</p>
+          </Link>
+          <Link
+            href='/download'
+            className='font-display flex items-center rounded-sm text-lg font-semibold transition-all  hover:text-gray-600'
+          >
+            <p>Download</p>
+          </Link>
+
+          {/* <div>
             {session ? (
               <UserDropdown session={session} />
             ) : (
@@ -43,7 +60,7 @@ export default function NavBar({ session }: { session: Session | null }) {
                 Sign In
               </button>
             )}
-          </div>
+          </div> */}
         </div>
       </div>
     </>

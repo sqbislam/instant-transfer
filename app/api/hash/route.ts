@@ -1,9 +1,11 @@
+import { OTP_EXPIRY_TIME } from '@/lib/constants';
 import prisma from '@/lib/prisma';
 import { generateOTP, hashOTP } from '@/lib/utils';
 import { NextRequest, NextResponse } from 'next/server';
+
 // Create a hashed OTP and store it in the database
 const POST = async (req: NextRequest) => {
-  const { fileIdentifiers, fileNames } = await req.json();
+  const { fileIdentifiers, fileNames, mimeTypes, sizes } = await req.json();
   if (!fileIdentifiers) {
     throw new Error('Something went wrong. Please try again.');
   }
@@ -16,8 +18,10 @@ const POST = async (req: NextRequest) => {
       data: {
         fileIdentifiers,
         otpHash,
+        mimeTypes,
+        sizes,
         fileNames,
-        expiresAt: new Date(Date.now() + 600000),
+        expiresAt: new Date(Date.now() + OTP_EXPIRY_TIME * 1000),
         createdAt: new Date(),
       },
     });
@@ -54,6 +58,8 @@ const GET = async (req: NextRequest) => {
       {
         fileIdentifiers: fileMapper.fileIdentifiers,
         fileNames: fileMapper.fileNames,
+        mimeTypes: fileMapper.mimeTypes,
+        sizes: fileMapper.sizes,
       },
       { status: 200 },
     );

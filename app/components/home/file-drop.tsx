@@ -1,13 +1,12 @@
 'use client';
 
-import { ChangeEvent, useRef, useState } from 'react';
+import { ChangeEvent, useCallback, useRef, useState } from 'react';
 import { FileDrop } from 'react-file-drop';
-import FilesList from './file-list';
+import FilesList from '../shared/file-list';
 import { Button } from '../ui/button';
 import { useFileUpload } from '@/lib/hooks/use-file-upload';
-import { Progress } from '../ui/progress';
 import OTPDisplay from '../ui/otp-display';
-
+import { AiOutlineLoading } from 'react-icons/ai';
 export default function FileDropzone() {
   const fileInputRef = useRef(null);
   const [currFiles, setCurrFiles] = useState<FileList | null>(null); // or any other type you want to use
@@ -19,6 +18,7 @@ export default function FileDropzone() {
     allFilesUploaded,
     isLoading,
     resetState,
+    buttonText,
   } = useFileUpload();
   const onFileDrop = (
     files: FileList | null,
@@ -29,17 +29,21 @@ export default function FileDropzone() {
     // do something with your files...
   };
 
-  const onFileInputChange = (event: ChangeEvent<HTMLInputElement>) => {
-    resetState();
-    const { files } = event.target;
-    setCurrFiles(files);
-    // do something with your files...
-  };
-  const onTargetClick = () => {
+  const onFileInputChange = useCallback(
+    (event: ChangeEvent<HTMLInputElement>) => {
+      resetState();
+      const { files } = event.target;
+      setCurrFiles(files);
+      // do something with your files...
+    },
+    [resetState],
+  );
+
+  const onTargetClick = useCallback(() => {
     fileInputRef &&
       fileInputRef.current &&
       (fileInputRef.current as any).click();
-  };
+  }, [fileInputRef]);
   return (
     <div className='w-full'>
       <input
@@ -72,7 +76,10 @@ export default function FileDropzone() {
               }
             }}
           >
-            Upload
+            {isLoading && (
+              <AiOutlineLoading className='mr-5 h-7 w-7 animate-spin' />
+            )}{' '}
+            {buttonText ?? 'Upload Files'}
           </Button>
         )}
       </div>

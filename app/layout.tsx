@@ -8,6 +8,7 @@ import { Suspense } from 'react';
 import { AiOutlineThunderbolt } from 'react-icons/ai';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { TimerProvider } from '@/lib/timercontext';
 
 export const metadata = {
   title: 'Instant Transfer',
@@ -52,7 +53,7 @@ export default async function RootLayout({
               </p>
             </div>
           </div>
-          {children}
+          <TimerProvider>{children}</TimerProvider>
         </main>
 
         <Footer />

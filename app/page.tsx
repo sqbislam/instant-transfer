@@ -8,13 +8,12 @@ import {
 } from '@/components/ui/card';
 import Link from 'next/link';
 import { toast } from 'react-toastify';
+import CountdownTimer from './components/shared/countdown-timer';
 
 export default function Home() {
   return (
     <div className='relative my-5 w-full max-w-xl'>
-      <Button className='absolute right-0 top-0'>
-        <Link href='/download'>Download File</Link>
-      </Button>
+      <CountdownTimer />
       <Card className='flex flex-col items-center gap-5 p-5'>
         <CardTitle>Upload your file</CardTitle>
         <CardDescription>Upload your file to get started</CardDescription>

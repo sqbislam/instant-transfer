@@ -8,6 +8,7 @@ import {
   GetObjectCommand,
 } from '@aws-sdk/client-s3';
 import { generateUniqueIdentifier } from '@/lib/utils';
+import axios from 'axios';
 
 // Initialize S3Client instance
 const client = new S3Client({
@@ -58,6 +59,7 @@ const GET = async (req: NextRequest) => {
       Key: fileIdentifier as string,
       Bucket: process.env.AWS_BUCKET,
     });
+
     // Generate pre-signed URL for GET request
     const getUrl = await getSignedUrl(client, getCommand, { expiresIn: 600 });
 

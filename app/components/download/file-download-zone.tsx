@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import FilesList from '../home/file-list';
+import FilesList from '../shared/file-list';
 import { Button } from '../ui/button';
 import { InputOTP } from '../ui/input-otp';
 import { OTPInputControlled } from './otp-input';
@@ -12,30 +12,25 @@ export default function FileDownloadZone() {
   const {
     onInputChange,
     handleMultipleFileDownload,
-    fileUploadData,
+    fileDownloadData,
     isLoading,
   } = useFileDownload();
-  console.debug({ fileUploadData });
+
   return (
     <div className='w-full'>
       <OTPInputControlled onInputChange={onInputChange} />
-      {/* <FilesList
-        files={currFiles}
-        fileProgress={fileProgress}
-        fileUploadData={fileUploadData}
-      /> */}
-      <div className='mx-auto mt-5 w-full'>
+      <FilesList fileDownloadData={fileDownloadData} />
+      {
         <Button
-          className='w-full'
-          disabled={isLoading}
           onClick={(e) => {
             e.preventDefault();
             handleMultipleFileDownload();
           }}
+          disabled={isLoading}
         >
-          Download Files
+          {isLoading ? 'Fetching...' : 'Download'}
         </Button>
-      </div>
+      }
     </div>
   );
 }
