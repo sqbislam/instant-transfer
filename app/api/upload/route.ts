@@ -28,21 +28,6 @@ const POST = async (req: NextRequest) => {
       throw new Error('There was a problem with the file!');
     }
 
-    // Create a new media entry in database.
-    // The uploaded media file will be stored in the S3 bucket
-    // with a name (Key) matching the id (PK) of the newMedia/photo.
-    // const newMedia = await prisma.photo.create({
-    //   data: {
-    //     fileSize: fileSize,
-    //     fileName: fileName,
-    //     mimeType: fileType,
-    //     authorId: user.id,
-    //     authorName: `${user.firstName} ${user.lastName}`
-    //   }
-    // })
-
-    // if (!newMedia) { throw new Error("Something went wrong!") }
-
     const fileIdentifier = await generateUniqueIdentifier();
 
     // PutObjectCommand: used to generate a pre-signed URL for uploading
@@ -54,22 +39,33 @@ const POST = async (req: NextRequest) => {
     // Generate pre-signed URL for PUT request
     const putUrl = await getSignedUrl(client, putCommand, { expiresIn: 600 });
 
-    // GetObjectCommand: used to generate a pre-signed URL for viewing.
-    const getCommand = new GetObjectCommand({
-      Key: fileIdentifier,
-      Bucket: process.env.AWS_BUCKET,
-    });
-    // Generate pre-signed URL for GET request
-    const getUrl = await getSignedUrl(client, getCommand, { expiresIn: 600 });
-
-    return NextResponse.json(
-      { putUrl, getUrl, fileIdentifier },
-      { status: 200 },
-    );
+    return NextResponse.json({ putUrl, fileIdentifier }, { status: 200 });
   } catch (error) {
     console.log(error);
     throw error;
   }
 };
 
-export { POST };
+const GET = async (req: NextRequest) => {
+  try {
+    // const user = await currentUser()
+    // if (!user) return new Response('Unauthorized', { status: 401 })
+
+    const fileIdentifier = await req.nextUrl.searchParams.get('fileIdentifier');
+
+    // GetObjectCommand: used to generate a pre-signed URL for viewing.
+    const getCommand = new GetObjectCommand({
+      Key: fileIdentifier as string,
+      Bucket: process.env.AWS_BUCKET,
+    });
+    // Generate pre-signed URL for GET request
+    const getUrl = await getSignedUrl(client, getCommand, { expiresIn: 600 });
+
+    return NextResponse.json({ getUrl, fileIdentifier }, { status: 200 });
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+};
+
+export { POST, GET };

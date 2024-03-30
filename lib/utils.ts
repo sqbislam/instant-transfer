@@ -54,4 +54,4 @@ export const createFormDataFromObject = (object: Record<string, any>) => {
     formData.append(key, object[key]);
   });
   return formData;
-}
+};

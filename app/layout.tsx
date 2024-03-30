@@ -6,6 +6,9 @@ import Nav from '@/components/layout/nav';
 import Footer from '@/components/layout/footer';
 import { Suspense } from 'react';
 import { AiOutlineThunderbolt } from 'react-icons/ai';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 export const metadata = {
   title: 'Instant Transfer',
   description:
@@ -27,6 +30,15 @@ export default async function RootLayout({
         <Suspense fallback='...'>
           <Nav />
         </Suspense>
+        <ToastContainer
+          position='bottom-right'
+          autoClose={5000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          theme='dark'
+        />
         <main className='z-5 flex min-h-screen w-full flex-col items-center py-32'>
           <div className=' w-full max-w-xl px-10 xl:px-0'>
             <div className='w-full '>

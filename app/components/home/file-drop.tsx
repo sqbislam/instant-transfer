@@ -18,16 +18,19 @@ export default function FileDropzone() {
     generatedOTP,
     allFilesUploaded,
     isLoading,
+    resetState,
   } = useFileUpload();
   const onFileDrop = (
     files: FileList | null,
     ev: React.DragEvent<HTMLDivElement>,
   ) => {
+    resetState();
     setCurrFiles(files);
     // do something with your files...
   };
 
   const onFileInputChange = (event: ChangeEvent<HTMLInputElement>) => {
+    resetState();
     const { files } = event.target;
     setCurrFiles(files);
     // do something with your files...
