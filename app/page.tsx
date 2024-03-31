@@ -13,7 +13,7 @@ import CountdownTimer from './components/shared/countdown-timer';
 export default function Home() {
   return (
     <div className='relative my-5 w-full max-w-xl'>
-      <CountdownTimer />
+      {/* <CountdownTimer /> */}
       <Card className='flex flex-col items-center gap-5 p-5'>
         <CardTitle>Upload your file</CardTitle>
         <CardDescription>Upload your file to get started</CardDescription>

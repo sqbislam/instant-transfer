@@ -9,6 +9,7 @@ import { AiOutlineThunderbolt } from 'react-icons/ai';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { TimerProvider } from '@/lib/timercontext';
+import CountdownTimer from './components/shared/countdown-timer';
 
 export const metadata = {
   title: 'Instant Transfer',
@@ -40,21 +41,26 @@ export default async function RootLayout({
           rtl={false}
           theme='dark'
         />
-        <main className='z-5 flex min-h-screen w-full flex-col items-center py-32'>
-          <div className=' w-full max-w-xl px-10 xl:px-0'>
-            <div className='w-full '>
-              <h2 className='my-4 inline-block text-2xl font-bold'>
-                Instant Transfer
-                <AiOutlineThunderbolt />
-              </h2>
-              <p className='text-slate-500'>
-                File transfer made easy. Just upload your file and use the code
-                or QR code to download file in your desired device
-              </p>
+        <TimerProvider>
+          <main className='z-5 flex min-h-screen w-full flex-col items-center py-32'>
+            <div className=' w-full max-w-xl px-10 xl:px-0'>
+              <div className='w-full '>
+                <div className='flex flex-row items-center justify-between'>
+                  <h2 className='my-4 inline-block text-2xl font-bold'>
+                    Instant Transfer
+                    <AiOutlineThunderbolt />
+                  </h2>
+                  <CountdownTimer />
+                </div>
+                <p className='text-slate-500'>
+                  File transfer made easy. Just upload your file and use the
+                  code or QR code to download file in your desired device
+                </p>
+              </div>
             </div>
-          </div>
-          <TimerProvider>{children}</TimerProvider>
-        </main>
+            {children}
+          </main>
+        </TimerProvider>
 
         <Footer />
         <Analytics />

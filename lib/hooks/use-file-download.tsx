@@ -23,6 +23,7 @@ export const useFileDownload = () => {
   const [inputOTP, setInputOTP] = useState('' as any);
   const [allFilesDownloaded, setAllFilesDownloaded] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [buttonText, setButtonText] = useState('Download Files' as any); //  Text displayed on loading button
 
   const resetState = useCallback(() => {
     setFileDownloadData({});

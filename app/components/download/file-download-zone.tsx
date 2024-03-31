@@ -27,6 +27,7 @@ export default function FileDownloadZone() {
             handleMultipleFileDownload();
           }}
           disabled={isLoading}
+          className='mt-2 w-full'
         >
           {isLoading ? 'Fetching...' : 'Download'}
         </Button>
