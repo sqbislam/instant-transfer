@@ -6,15 +6,17 @@ import { Button } from '../ui/button';
 import { InputOTP } from '../ui/input-otp';
 import { OTPInputControlled } from './otp-input';
 import { useFileDownload } from '@/lib/hooks/use-file-download';
+import { useSearchParams } from 'next/navigation';
 
 export default function FileDownloadZone() {
-  const [currFiles, setCurrFiles] = useState<FileList | null>(null); // or any other type you want to use
+    const searchParams = useSearchParams();
+    const otp = searchParams.get('otp');
   const {
     onInputChange,
     handleMultipleFileDownload,
     fileDownloadData,
     isLoading,
-  } = useFileDownload();
+  } = useFileDownload({ otp });
 
   return (
     <div className='w-full'>

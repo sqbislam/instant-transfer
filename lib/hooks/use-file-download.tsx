@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 
 export interface FileDownloadData {
@@ -15,7 +15,7 @@ export interface FileDownloadData {
   };
 }
 
-export const useFileDownload = () => {
+export const useFileDownload = ({ otp }: { otp: string | null }) => {
   const [fileDownloadData, setFileDownloadData] = useState<FileDownloadData>(
     {},
   );
@@ -25,6 +25,11 @@ export const useFileDownload = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [buttonText, setButtonText] = useState('Download Files' as any); //  Text displayed on loading button
 
+  useEffect(() => {
+    if (otp) {
+      setInputOTP(otp);
+    }
+  }, [otp]);
   const resetState = useCallback(() => {
     setFileDownloadData({});
 

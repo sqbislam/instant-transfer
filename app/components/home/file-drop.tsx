@@ -7,6 +7,7 @@ import { Button } from '../ui/button';
 import { useFileUpload } from '@/lib/hooks/use-file-upload';
 import OTPDisplay from '../ui/otp-display';
 import { AiOutlineLoading } from 'react-icons/ai';
+import QRCodeView from './qrCodeView';
 export default function FileDropzone() {
   const fileInputRef = useRef(null);
   const [currFiles, setCurrFiles] = useState<FileList | null>(null); // or any other type you want to use
@@ -64,7 +65,13 @@ export default function FileDropzone() {
       />
       <div className='mx-auto mt-5 w-full'>
         {allFilesUploaded ? (
-          <OTPDisplay otp={generatedOTP} />
+          <div>
+            Files Uploaded
+            <OTPDisplay otp={generatedOTP} />
+            <QRCodeView
+              value={`https://instant-transfer.vercel.app/download/otp=${generatedOTP}`}
+            />
+          </div>
         ) : (
           <Button
             className='w-full'
