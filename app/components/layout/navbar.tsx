@@ -4,9 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import useScroll from '@/lib/hooks/use-scroll';
 import { useSignInModal } from './sign-in-modal';
-import UserDropdown from './user-dropdown';
 import { Session } from 'next-auth';
-import { MdDownload } from 'react-icons/md';
 export default function NavBar({ session }: { session: Session | null }) {
   const { SignInModal, setShowSignInModal } = useSignInModal();
   const scrolled = useScroll(50);
