@@ -4,7 +4,8 @@ const QRCodeView = ({ value }: { value: string }) => {
   // Can be anything instead of `maxWidth` that limits the width.
   return (
     <div
-      style={{ height: 'auto', margin: '0 auto', maxWidth: 64, width: '100%' }}
+      className='mx-auto mt-5'
+      style={{ height: 'auto', maxWidth: 128, width: '100%' }}
     >
       <QRCode
         size={256}
