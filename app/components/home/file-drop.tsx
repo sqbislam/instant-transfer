@@ -69,7 +69,7 @@ export default function FileDropzone() {
             Files Uploaded
             <OTPDisplay otp={generatedOTP} />
             <QRCodeView
-              value={`https://instant-transfer.vercel.app/download/otp=${generatedOTP}`}
+              value={`https://instant-transfer.vercel.app/download?otp=${generatedOTP}`}
             />
           </div>
         ) : (
