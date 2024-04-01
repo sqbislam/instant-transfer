@@ -9,7 +9,7 @@ const TimerContext = createContext({
 
 export const TimerProvider = ({ children }: { children: ReactNode }) => {
   const [time, setTime] = useState(0);
-  const [countdown, setCountdown] = useState(3600); // 1 hour in seconds
+  const [countdown, setCountdown] = useState(0); // 1 hour in seconds
 
   useEffect(() => {
     const interval = setInterval(() => {
