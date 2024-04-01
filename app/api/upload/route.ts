@@ -19,15 +19,7 @@ const client = new S3Client({
   },
 } as any);
 
-export const config = {
-  api: {
-    bodyParser: {
-      sizeLimit: '500kb',
-    },
-  },
-  // Specifies the maximum allowed duration for this function to execute (in seconds)
-  maxDuration: 8,
-};
+export const maxDuration = 5;
 
 const POST = async (req: NextRequest) => {
   try {
