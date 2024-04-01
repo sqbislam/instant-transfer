@@ -2,6 +2,8 @@ import { useCallback, useState } from 'react';
 import { toast } from 'react-toastify';
 import axios from 'axios';
 import { createFormDataFromObject } from '../utils';
+import { OTP_EXPIRY_TIME, UPLOAD_MAX_SIZE } from '../constants';
+import { useTimer } from '../timercontext';
 export interface FileUploadData {
   [key: string]: {
     error?: string;
@@ -21,7 +23,7 @@ export const useFileUpload = () => {
   const [allFilesUploaded, setAllFilesUploaded] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [buttonText, setButtonText] = useState('Upload Files' as any); //  Text displayed on loading button
-
+  const { updateCountdown } = useTimer();
   const resetState = useCallback(() => {
     setFileUploadData({});
     setFileProgress({});
@@ -47,6 +49,13 @@ export const useFileUpload = () => {
         let fileType = fileParts[1];
 
         const data = createFormDataFromObject({ fileName, fileType });
+        const fileSize = currfile.size;
+        if (fileSize > UPLOAD_MAX_SIZE) {
+          toast.error(
+            'File size is too large.  Please upload a file less than 5MB.',
+          );
+          throw new Error('File size is too large');
+        }
         // Start file upload
         setButtonText('Uploading...');
         const res = await axios.post('/api/upload', data, {
@@ -57,7 +66,7 @@ export const useFileUpload = () => {
         const { putUrl, fileIdentifier } = await res.data;
         // Upload files to S3 using signed URL
         const uploadResponse = await axios.put(putUrl, currfile, {
-          headers: { 'Content-Type': currfile.type },
+          headers: { 'Content-Type': 'multipart/form-data' },
           onUploadProgress: (progressEvent) => {
             if (progressEvent.loaded && progressEvent.total !== undefined) {
               const percentCompleted =
@@ -117,7 +126,7 @@ export const useFileUpload = () => {
         }
 
         // Request Prisma to upload hashed OTP and file Identifiers
-        const data = { fileIdentifiers, fileNames, mimeTypes, sizes};
+        const data = { fileIdentifiers, fileNames, mimeTypes, sizes };
         setButtonText('Generating OTP...');
         const res = await axios.post('/api/hash', data, {
           headers: { 'Content-Type': 'application/json' },
@@ -132,7 +141,7 @@ export const useFileUpload = () => {
 
         // TODO: Email or SMS the OTP to the user
         setGeneratedOTP(generatedOTP);
-
+        updateCountdown(OTP_EXPIRY_TIME);
         toast.success('All files uploaded successfully. OTP generated!');
         setButtonText('Success!');
         setAllFilesUploaded(true);
@@ -144,7 +153,7 @@ export const useFileUpload = () => {
         toast.error('Failed to upload files');
       }
     },
-    [_handleSingleFileUpload],
+    [_handleSingleFileUpload, updateCountdown],
   );
 
   return {

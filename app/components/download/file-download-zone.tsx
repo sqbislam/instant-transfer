@@ -9,8 +9,8 @@ import { useFileDownload } from '@/lib/hooks/use-file-download';
 import { useSearchParams } from 'next/navigation';
 
 export default function FileDownloadZone() {
-    const searchParams = useSearchParams();
-    const otp = searchParams.get('otp');
+  const searchParams = useSearchParams();
+  const otp = searchParams.get('otp');
   const {
     onInputChange,
     handleMultipleFileDownload,
@@ -20,7 +20,7 @@ export default function FileDownloadZone() {
 
   return (
     <div className='w-full'>
-      <OTPInputControlled onInputChange={onInputChange} />
+      <OTPInputControlled onInputChange={onInputChange} defaultValue={otp} />
       <FilesList fileDownloadData={fileDownloadData} />
       {
         <Button

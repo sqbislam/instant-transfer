@@ -4,10 +4,12 @@ import { REGEXP_ONLY_DIGITS_AND_CHARS } from 'input-otp';
 
 export const OTPInputControlled = ({
   onInputChange,
+  defaultValue,
 }: {
   onInputChange: (value: string) => void;
+  defaultValue?: string | null;
 }) => {
-  const [value, setValue] = React.useState('');
+  const [value, setValue] = React.useState(defaultValue ?? '');
 
   return (
     <div className='space-y-2'>
@@ -16,6 +18,7 @@ export const OTPInputControlled = ({
         pattern={REGEXP_ONLY_DIGITS_AND_CHARS}
         maxLength={6}
         value={value}
+        inputMode='text'
         onChange={(value) => {
           setValue(value);
           onInputChange(value);

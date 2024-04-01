@@ -2,6 +2,6 @@ export const DEPLOY_URL = `https://vercel.com/new/clone?repository-url=https%3A%
 
 export const UPLOAD_DEFAULT_TIME = 600;
 export const DOWNLOAD_DEFAULT_TIME = 600;
-export const OTP_EXPIRY_TIME = 600;
-export const UPLOAD_MAX_SIZE = 1024 * 1024 * 100; // 100MB
+export const OTP_EXPIRY_TIME = 300; // 5 minutes
+export const UPLOAD_MAX_SIZE = 100 * 1024 * 100; // 100MB
 export const DOWNLOAD_MAX_SIZE = 1024 * 1024 * 100; // 100MB

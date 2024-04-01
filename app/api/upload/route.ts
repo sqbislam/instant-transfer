@@ -8,7 +8,7 @@ import {
   GetObjectCommand,
 } from '@aws-sdk/client-s3';
 import { generateUniqueIdentifier } from '@/lib/utils';
-import axios from 'axios';
+import { OTP_EXPIRY_TIME } from '@/lib/constants';
 
 // Initialize S3Client instance
 const client = new S3Client({
@@ -18,6 +18,16 @@ const client = new S3Client({
     secretAccessKey: process.env.AWS_SECRET_ID,
   },
 } as any);
+
+export const config = {
+  api: {
+    bodyParser: {
+      sizeLimit: '500kb',
+    },
+  },
+  // Specifies the maximum allowed duration for this function to execute (in seconds)
+  maxDuration: 8,
+};
 
 const POST = async (req: NextRequest) => {
   try {
@@ -38,7 +48,7 @@ const POST = async (req: NextRequest) => {
       Bucket: process.env.AWS_BUCKET,
     });
     // Generate pre-signed URL for PUT request
-    const putUrl = await getSignedUrl(client, putCommand, { expiresIn: 600 });
+    const putUrl = await getSignedUrl(client, putCommand, { expiresIn: 200 });
 
     return NextResponse.json({ putUrl, fileIdentifier }, { status: 200 });
   } catch (error) {
@@ -61,7 +71,9 @@ const GET = async (req: NextRequest) => {
     });
 
     // Generate pre-signed URL for GET request
-    const getUrl = await getSignedUrl(client, getCommand, { expiresIn: 600 });
+    const getUrl = await getSignedUrl(client, getCommand, {
+      expiresIn: OTP_EXPIRY_TIME,
+    });
 
     return NextResponse.json({ getUrl, fileIdentifier }, { status: 200 });
   } catch (error) {
