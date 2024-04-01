@@ -74,7 +74,7 @@ export default function FileDropzone() {
           </div>
         ) : (
           <Button
-            className='w-full'
+            className='w-full font-semibold'
             disabled={isLoading || !currFiles || currFiles.length === 0}
             onClick={(e) => {
               e.preventDefault();

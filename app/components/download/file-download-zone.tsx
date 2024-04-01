@@ -29,7 +29,7 @@ export default function FileDownloadZone() {
             handleMultipleFileDownload();
           }}
           disabled={isLoading}
-          className='mt-2 w-full'
+          className='mt-2 w-full font-semibold'
         >
           {isLoading ? 'Fetching...' : 'Download'}
         </Button>

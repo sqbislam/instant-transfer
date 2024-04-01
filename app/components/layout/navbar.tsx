@@ -4,6 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import useScroll from '@/lib/hooks/use-scroll';
 import { Session } from 'next-auth';
+import ModeToggle from '../shared/theme-toggle';
 export default function NavBar() {
   const scrolled = useScroll(50);
 
@@ -13,7 +14,7 @@ export default function NavBar() {
       <div
         className={`fixed top-0 flex w-full justify-center ${
           scrolled
-            ? 'border-b border-gray-200 bg-white/50 backdrop-blur-xl'
+            ? 'border-b border-gray-200 bg-white/50 backdrop-blur-xl dark:border-gray-800 dark:bg-black/50 '
             : 'bg-white/0'
         } z-30 transition-all`}
       >
@@ -44,6 +45,8 @@ export default function NavBar() {
           >
             <p>Download</p>
           </Link>
+
+          <ModeToggle />
 
           {/* <div>
             {session ? (

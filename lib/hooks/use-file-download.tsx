@@ -80,6 +80,8 @@ export const useFileDownload = ({ otp }: { otp: string | null }) => {
       }
     } catch (error) {
       toast.error('Something went wrong. Please try again.');
+      setIsLoading(false);
+      setButtonText('Try Again');
       console.error(error);
     }
   };
